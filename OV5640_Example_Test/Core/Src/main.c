@@ -41,18 +41,6 @@
 
 /* Private variables ---------------------------------------------------------*/
 
-DCMI_HandleTypeDef hdcmi;
-DMA_HandleTypeDef hdma_dcmi;
-
-DMA2D_HandleTypeDef hdma2d;
-
-LTDC_HandleTypeDef hltdc;
-
-UART_HandleTypeDef huart1;
-
-DMA_HandleTypeDef hdma_memtomem_dma2_stream0;
-SDRAM_HandleTypeDef hsdram1;
-
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */

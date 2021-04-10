@@ -2,18 +2,12 @@
 #include "ov5640cfg.h"
 #include "ov5640af.h"			 	
 #include "sccb.h"
-#include "stm32746g_discovery_sdram.h"
-#include "stm32746g_discovery_lcd.h"
-#include "main.h"
 
 
-
-extern DMA_HandleTypeDef hdma_dcmi;
-extern DCMI_HandleTypeDef hdcmi;
 
 uint8_t   jpeg_mode = 0;
 uint32_t  jpeg_buf_size = 0;
-uint8_t   jpeg_data_buf[JPEG_BUF_SIZE_MAX] __attribute__((at(SDRAM_DEVICE_ADDR+0x400000))); 
+const uint8_t   jpeg_data_buf[JPEG_BUF_SIZE_MAX] __attribute__((at(SDRAM_DEVICE_ADDR+0x400000)));
 uint16_t  dcmi_line_buf[2][XSIZE];
 uint16_t  curline = 0;
 
@@ -459,7 +453,7 @@ void jpeg_test(uint8_t jpg_size)
         hdma_dcmi.Init.PeriphBurst = DMA_PBURST_SINGLE;
         if (HAL_DMA_Init(&hdma_dcmi) != HAL_OK)
         {
-        _Error_Handler(__FILE__, __LINE__);
+        Error_Handler();
         }
           
         __HAL_LINKDMA(&hdcmi,DMA_Handle,hdma_dcmi);
