@@ -72,8 +72,14 @@ void Error_Handler(void);
 #define DCMI_SIOC_GPIO_Port GPIOB
 #define DCMI_SIOD_Pin GPIO_PIN_9
 #define DCMI_SIOD_GPIO_Port GPIOB
+#define LCD_BL_CTRL_Pin GPIO_PIN_3
+#define LCD_BL_CTRL_GPIO_Port GPIOK
+#define DCMI_PWR_EN_Pin GPIO_PIN_13
+#define DCMI_PWR_EN_GPIO_Port GPIOH
 #define USER_BUTTON_Pin GPIO_PIN_11
 #define USER_BUTTON_GPIO_Port GPIOI
+#define WAKEUP_KEY_Pin GPIO_PIN_0
+#define WAKEUP_KEY_GPIO_Port GPIOA
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
