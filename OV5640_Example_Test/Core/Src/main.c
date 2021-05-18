@@ -41,6 +41,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 
+
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -54,6 +55,8 @@ static void MX_FMC_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_DCMI_Init(void);
 static void MX_LTDC_Init(void);
+static void MX_QUADSPI_Init(void);
+
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -70,7 +73,8 @@ static void MX_LTDC_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+	SCB_EnableICache();
+	SCB_EnableDCache();
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -90,6 +94,7 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
+  MX_QUADSPI_Init();
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_DMA2D_Init();
@@ -98,17 +103,78 @@ int main(void)
   MX_DCMI_Init();
   MX_LTDC_Init();
   /* USER CODE BEGIN 2 */
+  BSP_SDRAM_Init();
+  BSP_LCD_Init();
+  BSP_LCD_SetLayerVisible(1, DISABLE);
+  BSP_LCD_SelectLayer(0);
+  BSP_LCD_DisplayOn();
 
+  // turn ON the LCD backlight
+  HAL_GPIO_WritePin(LCD_BL_CTRL_GPIO_PORT,LCD_BL_CTRL_PIN,GPIO_PIN_SET);
+  BSP_LCD_Clear(LCD_COLOR_WHITE);
+  BSP_LCD_SetBackColor(LCD_COLOR_WHITE);
+  BSP_LCD_SetTextColor(LCD_COLOR_RED);
+  BSP_LCD_SetFont(&Font20);
+
+  //BSP_LCD_DisplayStringAt(0, 60, (uint8_t *)"Initializing, please wait ...", CENTER_MODE);
+  //printf("Initializing, please wait ...\r\n");
+
+  while(OV5640_Init())
+  {
+	  //printf("OV5640 error, please check !\r\n");
+	  BSP_LCD_Clear(LCD_COLOR_WHITE);
+	  HAL_Delay(200);
+	  //BSP_LCD_DisplayStringAt(0, 60, (uint8_t *)"OV5640 error, please check !", CENTER_MODE);
+	  HAL_Delay(300);
+  }
+  OV5640_RGB565_Mode();
+  OV5640_Focus_Init();
+  OV5640_Light_Mode(0);	   //set auto
+  OV5640_Color_Saturation(3); //default
+  OV5640_Brightness(4);	//default
+  OV5640_Contrast(3);     //default
+  OV5640_Sharpness(33);	//set auto
+  OV5640_Auto_Focus();
+
+  BSP_LCD_Clear(LCD_COLOR_WHITE);
+  BSP_LCD_SetTextColor(LCD_COLOR_BLUE);
+  //BSP_LCD_DisplayStringAt(0, 60, (uint8_t *)"Waveshare OV5640 Test", CENTER_MODE);
+  //BSP_LCD_DisplayStringAt(0, 130, (uint8_t *)" WAKE UP:   JPEG", LEFT_MODE);
+  //BSP_LCD_DisplayStringAt(0, 160, (uint8_t *)" JOYSTICK:  RGB565", LEFT_MODE);
+
+//  printf("Waveshare OV5640 Test Start !\r\n");
+//  printf("WAKE UP:   JPEG \r\n");
+//  printf("JOYSTICK:   RGB565 \r\n");
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
+//  while (1)
+//  {
     /* USER CODE END WHILE */
+//	  if(WAKE_UP_KEY_PRESS)
+//	  {
+		  HAL_Delay(15);
+//		  if(WAKE_UP_KEY_PRESS)
+//		  {
+			  __HAL_RCC_LTDC_CLK_DISABLE();
 
+			  jpeg_test(SVGA_800_600);
+//		  }
+//		  while(WAKE_UP_KEY_PRESS);   // wait until key restore
+//	  }
+
+//	  if(JOYSTICK_KEY_PRESS)
+//	  {
+//		  HAL_Delay(15);
+//		  if(JOYSTICK_KEY_PRESS)
+//		  {
+//			  rgb565_test();
+//		  }
+//		  while(JOYSTICK_KEY_PRESS);   // wait until key restore
+//	  }
     /* USER CODE BEGIN 3 */
-  }
+//  }
   /* USER CODE END 3 */
 }
 
@@ -129,10 +195,8 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 25;
@@ -174,7 +238,44 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  HAL_RCC_MCOConfig(RCC_MCO1, RCC_MCO1SOURCE_HSI, RCC_MCODIV_1);
+}
+
+/**
+  * @brief QUADSPI Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_QUADSPI_Init(void)
+{
+
+  /* USER CODE BEGIN QUADSPI_Init 0 */
+
+  /* USER CODE END QUADSPI_Init 0 */
+
+  /* USER CODE BEGIN QUADSPI_Init 1 */
+
+  /* USER CODE END QUADSPI_Init 1 */
+  /* QUADSPI parameter configuration*/
+  hqspi.Instance = QUADSPI;
+  hqspi.Init.ClockPrescaler = 1;
+  hqspi.Init.FifoThreshold = 4;
+  hqspi.Init.SampleShifting = QSPI_SAMPLE_SHIFTING_HALFCYCLE;
+  hqspi.Init.FlashSize = 24;
+  hqspi.Init.ChipSelectHighTime = QSPI_CS_HIGH_TIME_6_CYCLE;
+  hqspi.Init.ClockMode = QSPI_CLOCK_MODE_0;
+  hqspi.Init.FlashID = QSPI_FLASH_ID_1;
+  hqspi.Init.DualFlash = QSPI_DUALFLASH_DISABLE;
+  if (HAL_QSPI_Init(&hqspi) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN QUADSPI_Init 2 */
+  BSP_QSPI_Init();
+
+  BSP_QSPI_MemoryMappedMode();
+  HAL_NVIC_DisableIRQ(QUADSPI_IRQn);
+  /* USER CODE END QUADSPI_Init 2 */
+
 }
 
 /**
@@ -400,7 +501,7 @@ static void MX_DMA_Init(void)
 
   /* DMA interrupt init */
   /* DMA2_Stream1_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA2_Stream1_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(DMA2_Stream1_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA2_Stream1_IRQn);
 
 }
@@ -478,7 +579,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOB, DCMI_SIOC_Pin|DCMI_SIOD_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LCD_BL_CTRL_GPIO_Port, LCD_BL_CTRL_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(LCD_BL_CTRL_GPIO_PORT, LCD_BL_CTRL_PIN, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(DCMI_PWR_EN_GPIO_Port, DCMI_PWR_EN_Pin, GPIO_PIN_RESET);
@@ -491,11 +592,11 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pin : LCD_BL_CTRL_Pin */
-  GPIO_InitStruct.Pin = LCD_BL_CTRL_Pin;
+  GPIO_InitStruct.Pin = LCD_BL_CTRL_PIN;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LCD_BL_CTRL_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(LCD_BL_CTRL_GPIO_PORT, &GPIO_InitStruct);
 
   /*Configure GPIO pin : DCMI_PWR_EN_Pin */
   GPIO_InitStruct.Pin = DCMI_PWR_EN_Pin;
@@ -510,14 +611,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(USER_BUTTON_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PA8 */
-  GPIO_InitStruct.Pin = GPIO_PIN_8;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStruct.Alternate = GPIO_AF0_MCO;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
   /*Configure GPIO pin : WAKEUP_KEY_Pin */
   GPIO_InitStruct.Pin = WAKEUP_KEY_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
@@ -529,6 +622,27 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
+
+ /**
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM2 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* USER CODE BEGIN Callback 0 */
+
+  /* USER CODE END Callback 0 */
+  if (htim->Instance == TIM2) {
+    HAL_IncTick();
+  }
+  /* USER CODE BEGIN Callback 1 */
+
+  /* USER CODE END Callback 1 */
+}
 
 /**
   * @brief  This function is executed in case of error occurrence.

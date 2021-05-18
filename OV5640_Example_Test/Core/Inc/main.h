@@ -32,10 +32,21 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
+
+#include "FreeRTOS.h"
+#include "task.h"
+#include "timers.h"
+#include "queue.h"
+#include "semphr.h"
+#include "event_groups.h"
+
 #include "stm32746g_discovery_sdram.h"
 #include "stm32746g_discovery_lcd.h"
 #include "stm32746g_discovery.h"
 #include "stm32746g_discovery_ts.h"
+#include "stm32746g_discovery_qspi.h"
+#include "ov5640.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -45,7 +56,6 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-
 DCMI_HandleTypeDef hdcmi;
 DMA_HandleTypeDef hdma_dcmi;
 
@@ -57,11 +67,15 @@ UART_HandleTypeDef huart1;
 
 DMA_HandleTypeDef hdma_memtomem_dma2_stream0;
 SDRAM_HandleTypeDef hsdram1;
+QSPI_HandleTypeDef hqspi;
+
+
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
-
+#define LOCATION_PRAGMA(name)
+#define LOCATION_ATTRIBUTE(name) __attribute__((section(STR(name)))) __attribute__((aligned(4)))
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
@@ -76,14 +90,12 @@ void Error_Handler(void);
 #define DCMI_SIOC_GPIO_Port GPIOB
 #define DCMI_SIOD_Pin GPIO_PIN_9
 #define DCMI_SIOD_GPIO_Port GPIOB
-#define LCD_BL_CTRL_Pin GPIO_PIN_3
-#define LCD_BL_CTRL_GPIO_Port GPIOK
 #define DCMI_PWR_EN_Pin GPIO_PIN_13
 #define DCMI_PWR_EN_GPIO_Port GPIOH
 #define USER_BUTTON_Pin GPIO_PIN_11
 #define USER_BUTTON_GPIO_Port GPIOI
-#define WAKEUP_KEY_Pin GPIO_PIN_0
-#define WAKEUP_KEY_GPIO_Port GPIOA
+#define WAKEUP_KEY_Pin GPIO_PIN_11
+#define WAKEUP_KEY_GPIO_Port GPIOI
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

@@ -7,7 +7,11 @@
 
 uint8_t   jpeg_mode = 0;
 uint32_t  jpeg_buf_size = 0;
-const uint8_t   jpeg_data_buf[JPEG_BUF_SIZE_MAX] __attribute__((at(SDRAM_DEVICE_ADDR+0x400000)));
+//const uint8_t   jpeg_data_buf[JPEG_BUF_SIZE_MAX] __attribute__((at(SDRAM_DEVICE_ADDR+0x400000)));
+LOCATION_PRAGMA("ExtFlashSection")
+uint8_t   jpeg_data_buf[JPEG_BUF_SIZE_MAX] __attribute__((section("ExtFlashSection"))) __attribute__((aligned(4)));
+//uint32_t frameBuf[(480 * 272 * 2 + 3) / 4 * 2] LOCATION_ATTRIBUTE("ExtFlashSection");
+
 uint16_t  dcmi_line_buf[2][XSIZE];
 uint16_t  curline = 0;
 
@@ -20,24 +24,24 @@ uint8_t   htc_flag = 0;
 
 const uint16_t jpeg_size_tbl[][2]=
 {     
-        160, 120,	//QQVGA
+    160, 120,	//QQVGA
 	176, 144,	//QCIF
 	320, 240,	//QVGA
 	400, 240,	//WQVGA
 	352, 288,	//CIF
 	640, 480,	//VGA
-        800, 600,	//SVGA   
+	800, 600,	//SVGA
 };
 
 const uint32_t jpeg_buf_max_size[]=
 {     
-        20*1024,	//QQVGA
+    20*1024,	//QQVGA
 	30*1024,	//QCIF
 	100*1024,	//QVGA
 	100*1024,	//WQVGA
 	100*1024,	//CIF
 	200*1024,	//VGA
-        400*1024,	//SVGA   
+    400*1024,	//SVGA
 };
 
 
@@ -459,7 +463,7 @@ void jpeg_test(uint8_t jpg_size)
         __HAL_LINKDMA(&hdcmi,DMA_Handle,hdma_dcmi);
         
         /* Start the Camera capture */
-        HAL_DCMI_Start_DMA(&hdcmi, DCMI_MODE_CONTINUOUS, (uint32_t)jpeg_data_buf, jpeg_buf_size/4 );     
+        HAL_DCMI_Start_DMA(&hdcmi, DCMI_MODE_CONTINUOUS, (uint32_t)jpeg_data_buf, jpeg_buf_size/4 );
 
         jpeg_mode = 1; 
                 
@@ -623,7 +627,7 @@ void jpeg_dcmi_frame_callback(DMA_HandleTypeDef *_hdma)
                 //printf("jpgstart :  %d \r\n" , jpgstart); 
         }
             
-        HAL_DCMI_Start_DMA(&hdcmi, DCMI_MODE_CONTINUOUS, (uint32_t)jpeg_data_buf, jpeg_buf_size/4 );           
+        HAL_DCMI_Start_DMA(&hdcmi, DCMI_MODE_CONTINUOUS, (uint32_t)jpeg_data_buf, jpeg_buf_size/4 );
 }
 
 // DCMI Frame Event callback.

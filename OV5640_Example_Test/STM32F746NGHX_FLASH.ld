@@ -38,6 +38,7 @@ MEMORY
 {
   RAM    (xrw)    : ORIGIN = 0x20000000,   LENGTH = 320K
   FLASH    (rx)    : ORIGIN = 0x8000000,   LENGTH = 1024K
+  QUADSPI (r)    : ORIGIN = 0x90000000,  LENGTH = 16M
 }
 
 /* Sections */
@@ -174,4 +175,25 @@ SECTIONS
   }
 
   .ARM.attributes 0 : { *(.ARM.attributes) }
+  
+  ExtFlashSection :
+	{
+		*(ExtFlashSection ExtFlashSection.*)
+		*(.gnu.linkonce.r.*)
+        . = ALIGN(0x4);
+	} >QUADSPI
+
+  FontFlashSection :
+	{
+		*(FontFlashSection FontFlashSection.*)
+		*(.gnu.linkonce.r.*)
+        . = ALIGN(0x4);
+	} >QUADSPI
+
+  TextFlashSection :
+	{
+		*(TextFlashSection TextFlashSection.*)
+		*(.gnu.linkonce.r.*)
+        . = ALIGN(0x4);
+	} >QUADSPI
 }
