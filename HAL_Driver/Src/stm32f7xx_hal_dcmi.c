@@ -110,6 +110,7 @@
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 static void       DCMI_DMAXferCplt(DMA_HandleTypeDef *hdma);
+static void       DCMI_DMAXferCplt_DBM(DMA_HandleTypeDef *hdma);
 static void       DCMI_DMAError(DMA_HandleTypeDef *hdma);
 
 /* Exported functions --------------------------------------------------------*/
@@ -367,6 +368,68 @@ HAL_StatusTypeDef HAL_DCMI_Start_DMA(DCMI_HandleTypeDef* hdcmi, uint32_t DCMI_Mo
   /* Return function status */
   return HAL_OK;
 }
+
+/**
+  * @brief  Enables DCMI DMA request in double-buffer mode and enables DCMI capture
+  * @param  hdcmi     pointer to a DCMI_HandleTypeDef structure that contains
+  *                    the configuration information for DCMI.
+  * @param  DCMI_Mode DCMI capture mode snapshot or continuous grab.
+  * @param  pData     The destination memory Buffer address (LCD Frame buffer).
+  * @param  pData2nd  The second destination memory Buffer address (LCD Frame buffer).
+  * @param  Length    The length of capture to be transferred.
+  * @retval HAL status
+  */
+HAL_StatusTypeDef HAL_DCMI_Start_DMA_DBM(DCMI_HandleTypeDef* hdcmi, uint32_t DCMI_Mode, uint32_t pData, uint32_t pData2nd, uint32_t Length)
+{
+  /* Initialize the second memory address */
+  uint32_t SecondMemAddress = pData2nd;
+
+  /* Check function parameters */
+  assert_param(IS_DCMI_CAPTURE_MODE(DCMI_Mode));
+
+  /* Process Locked */
+  __HAL_LOCK(hdcmi);
+
+  /* Lock the DCMI peripheral state */
+  hdcmi->State = HAL_DCMI_STATE_BUSY;
+
+  /* Enable DCMI by setting DCMIEN bit */
+  __HAL_DCMI_ENABLE(hdcmi);
+
+  /* Configure the DCMI Mode */
+  hdcmi->Instance->CR &= ~(DCMI_CR_CM);
+  hdcmi->Instance->CR |=  (uint32_t)(DCMI_Mode);
+
+  /* Set the DMA memory0 conversion complete callback */
+  hdcmi->DMA_Handle->XferCpltCallback = DCMI_DMAXferCplt_DBM;
+
+  /* Set the DMA memory1 conversion complete callback */
+  hdcmi->DMA_Handle->XferM1CpltCallback = DCMI_DMAXferCplt_DBM; 
+
+  /* Set the DMA error callback */
+  hdcmi->DMA_Handle->XferErrorCallback = DCMI_DMAError;
+
+  /* Set the dma abort callback */
+  hdcmi->DMA_Handle->XferAbortCallback = NULL;
+
+  /* Reset transfer counters value */
+  hdcmi->XferCount = 0;
+  hdcmi->XferTransferNumber = 0;
+
+  /* DCMI_DOUBLE_BUFFER Mode */
+  /* Start DMA multi buffer transfer */
+  HAL_DMAEx_MultiBufferStart_IT(hdcmi->DMA_Handle, (uint32_t)&hdcmi->Instance->DR, (uint32_t)pData, (uint32_t)SecondMemAddress, Length);
+
+  /* Enable Capture */
+  hdcmi->Instance->CR |= DCMI_CR_CAPTURE;
+
+  /* Release Lock */
+  __HAL_UNLOCK(hdcmi);
+
+  /* Return function status */
+  return HAL_OK;
+}
+
 
 /**
   * @brief  Disable DCMI DMA request and Disable DCMI capture  
@@ -839,6 +902,25 @@ static void DCMI_DMAXferCplt(DMA_HandleTypeDef *hdma)
     hdcmi->DMA_Handle->Instance->M1AR = (tmp + (4*hdcmi->XferSize));
     hdcmi->XferCount = hdcmi->XferTransferNumber;
   }
+
+  /* Check if the frame is transferred */
+  if(hdcmi->XferCount == hdcmi->XferTransferNumber)
+  {
+    /* Enable the Frame interrupt */
+    __HAL_DCMI_ENABLE_IT(hdcmi, DCMI_IT_FRAME);
+    
+    /* When snapshot mode, set dcmi state to ready */
+    if((hdcmi->Instance->CR & DCMI_CR_CM) == DCMI_MODE_SNAPSHOT)
+    {  
+      hdcmi->State= HAL_DCMI_STATE_READY;
+    }
+  }  
+}
+
+static void DCMI_DMAXferCplt_DBM(DMA_HandleTypeDef *hdma)
+{
+
+  DCMI_HandleTypeDef* hdcmi = ( DCMI_HandleTypeDef* )((DMA_HandleTypeDef* )hdma)->Parent;
 
   /* Check if the frame is transferred */
   if(hdcmi->XferCount == hdcmi->XferTransferNumber)

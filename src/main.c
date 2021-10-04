@@ -7,7 +7,20 @@
 
 #include "lv_examples/lv_examples.h"
 
+#include "stm32f746xx.h"
+#include "stm32746g_discovery_qspi.h"
+#include "stm32746g_discovery_sdram.h"
+
+#include "digitalcam_gui/inc/digitalcam_gui.h"
+#include "cam/inc/cam.h"
+#include "Utilities/STM32746G-Discovery/stm32746g_discovery_lcd.h"
+#include "stm32746g_discovery.h"
+
+
+#define DISP_FRAME_BUFFER			0xC0200000
+
 static void SystemClock_Config(void);
+
 
 int main(void)
 {
@@ -22,17 +35,33 @@ int main(void)
     /* Enable D-Cache */
     SCB_EnableDCache();
 
-    lv_init();
+    BSP_LCD_Init();
+    BSP_LCD_LayerRgb565Init(1, (uint32_t)DISP_FRAME_BUFFER);
+    BSP_LCD_SetLayerWindow(1, 0, 0, 480, 272);
+    BSP_LCD_DisplayOn();
 
-    tft_init();
-    touchpad_init();
 
-    lv_demo_widgets();
+//    BSP_QSPI_Init();
+//    BSP_QSPI_MemoryMappedMode();
+
+//    BSP_SDRAM_Init();
+//    HAL_EnableFMCMemorySwapping();
+//    lv_init();
+
+//    tft_init();
+//    touchpad_init();
+
+//    lv_demo_benchmark();
+//    lv_demo_widgets();
+//    digitalcam_gui_init();
+
+    cam_init();
+    cam_live_feed();
 
     while (1)
     {
-        HAL_Delay(5);
-        lv_task_handler();
+//        HAL_Delay(5);
+//        lv_task_handler();
     }
 }
 

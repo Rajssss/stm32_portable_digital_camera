@@ -163,6 +163,12 @@ uint8_t BSP_CAMERA_Init(uint32_t Resolution)
   phdcmi->Init.PCKPolarity      = DCMI_PCKPOLARITY_RISING;
   phdcmi->Instance              = DCMI;
 
+  phdcmi->Init.JPEGMode = DCMI_JPEG_DISABLE;
+  phdcmi->Init.ByteSelectMode = DCMI_BSM_ALL;
+  phdcmi->Init.ByteSelectStart = DCMI_OEBS_ODD;
+  phdcmi->Init.LineSelectMode = DCMI_LSM_ALL;
+  phdcmi->Init.LineSelectStart = DCMI_OELS_ODD;
+
   /* Power up camera */
   BSP_CAMERA_PwrUp();
 
@@ -232,6 +238,18 @@ void BSP_CAMERA_ContinuousStart(uint8_t *buff)
 { 
   /* Start the camera capture */
   HAL_DCMI_Start_DMA(&hDcmiHandler, DCMI_MODE_CONTINUOUS, (uint32_t)buff, GetSize(CameraCurrentResolution));
+}
+
+/**
+  * @brief  Starts the camera capture in continuous mode with double-buffer.
+  * @param  buff: pointer to the camera output buffer
+  * @param  second_buff: pointer to the second camera output buffer
+  * @retval None
+  */
+void BSP_CAMERA_ContinuousStart_DBM(uint8_t *buff, uint8_t *second_buff)
+{
+  /* Start the camera capture */
+  HAL_DCMI_Start_DMA_DBM(&hDcmiHandler, DCMI_MODE_CONTINUOUS, (uint32_t)buff, (uint32_t)second_buff, GetSize(CameraCurrentResolution));
 }
 
 /**

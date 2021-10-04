@@ -43,6 +43,7 @@ MEMORY
 {
 RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 320K
 FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 1024K
+QSPI (xrw)      : ORIGIN = 0x90000000, LENGTH = 16M
 }
 
 /* Define output sections */
@@ -55,6 +56,17 @@ SECTIONS
     KEEP(*(.isr_vector)) /* Startup code */
     . = ALIGN(4);
   } >FLASH
+  
+   .textqspi :
+  {
+    . = ALIGN(4);
+    _qspi_start = .;        /* create a global symbol at qspi start */
+    *(.textqspi)         /* .textqspi sections */
+    *(.textqspi*)        /* .textqspi* sections */
+    . = ALIGN(4);
+    _qspi_end = .;         /* define a global symbols at end of textqspi */
+    
+  } >QSPI AT> FLASH
 
   /* The program code and other data goes into FLASH */
   .text :
@@ -152,7 +164,6 @@ SECTIONS
     . = . + _Min_Stack_Size;
     . = ALIGN(8);
   } >RAM
-
   
 
   /* Remove information from the standard libraries */
@@ -164,6 +175,5 @@ SECTIONS
   }
 
   .ARM.attributes 0 : { *(.ARM.attributes) }
+  .textqspi : { *(.textqspi) } >QSPI
 }
-
-
