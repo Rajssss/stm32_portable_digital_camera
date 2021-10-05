@@ -79,6 +79,8 @@ void digicam_viewfinder_init(void)
 
 	lv_obj_t *switch_mode_btn = lv_obj_create(viewfinder_scr, action_btn);
 	lv_obj_set_size(switch_mode_btn, 37, 37);
+	lv_obj_set_style_local_bg_opa(switch_mode_btn, LV_BTN_PART_MAIN, LV_STATE_PRESSED, 50);
+	lv_obj_set_style_local_bg_opa(switch_mode_btn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 50);
 	lv_obj_align(switch_mode_btn, viewfinder_scr, LV_ALIGN_IN_TOP_RIGHT, -10, 10);
 
 	lv_obj_t *switch_mode_icon = lv_label_create(switch_mode_btn, action_icon);
