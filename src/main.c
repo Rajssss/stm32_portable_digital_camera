@@ -35,33 +35,27 @@ int main(void)
     /* Enable D-Cache */
     SCB_EnableDCache();
 
-    BSP_LCD_Init();
-    BSP_LCD_LayerRgb565Init(1, (uint32_t)DISP_FRAME_BUFFER);
-    BSP_LCD_SetLayerWindow(1, 0, 0, 480, 272);
-    BSP_LCD_DisplayOn();
+    BSP_QSPI_Init();
+    BSP_QSPI_MemoryMappedMode();
 
+    BSP_SDRAM_Init();
+    HAL_EnableFMCMemorySwapping();
+    lv_init();
 
-//    BSP_QSPI_Init();
-//    BSP_QSPI_MemoryMappedMode();
-
-//    BSP_SDRAM_Init();
-//    HAL_EnableFMCMemorySwapping();
-//    lv_init();
-
-//    tft_init();
-//    touchpad_init();
+    tft_init();
+    touchpad_init();
 
 //    lv_demo_benchmark();
 //    lv_demo_widgets();
-//    digitalcam_gui_init();
+    digitalcam_gui_init();
 
-    cam_init();
-    cam_live_feed();
+//    cam_init();
+//    cam_live_feed();
 
     while (1)
     {
-//        HAL_Delay(5);
-//        lv_task_handler();
+        HAL_Delay(5);
+        lv_task_handler();
     }
 }
 
