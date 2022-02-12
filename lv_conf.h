@@ -29,11 +29,11 @@
  * - 16: RGB565
  * - 32: ARGB8888
  */
-#define LV_COLOR_DEPTH 16
+#define LV_COLOR_DEPTH 		16
 
 /* Swap the 2 bytes of RGB565 color.
  * Useful if the display has a 8 bit interface (e.g. SPI)*/
-#define LV_COLOR_16_SWAP   0
+#define LV_COLOR_16_SWAP	0
 
 /* 1: Enable screen transparency.
  * Useful for OSD or other overlapping GUIs.

@@ -10,10 +10,20 @@
 
 #include <stdint.h>
 
+/*
+#define CAM_FRAME_BUFFER			0x60200000
+#define CAM_SECOND_FRAME_BUFFER		0x60400000
+*/
+
 #define CAM_FRAME_BUFFER			0x60000000
 #define CAM_SECOND_FRAME_BUFFER		0x60200000
 
+/*
+#define FRAME_BUFFER			0xC0000000
+#define SECOND_FRAME_BUFFER		0xC0200000
+*/
+
 uint8_t cam_init(void);
-uint8_t cam_live_feed(void);
+uint8_t cam_live_feed(void *cam_bf1, void *cam_bf2);
 
 #endif /* CAM_INC_CAM_H_ */

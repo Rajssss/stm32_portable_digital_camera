@@ -141,35 +141,35 @@ void tft_init(void)
 	* Create a buffer for drawing
 	*----------------------------*/
 
-   /* LittlevGL requires a buffer where it draws the objects. The buffer's has to be greater than 1 display row*/
+/*    LittlevGL requires a buffer where it draws the objects. The buffer's has to be greater than 1 display row*/
 
 	static lv_disp_buf_t disp_buf_1;
 	static lv_color_t buf1_1[LV_HOR_RES_MAX * 68];
 	static lv_color_t buf1_2[LV_HOR_RES_MAX * 68];
-	lv_disp_buf_init(&disp_buf_1, buf1_1, buf1_2, LV_HOR_RES_MAX * 68);   /*Initialize the display buffer*/
+	lv_disp_buf_init(&disp_buf_1, buf1_1, buf1_2, LV_HOR_RES_MAX * 68);   //Initialize the display buffer
 
 
 	/*-----------------------------------
 	* Register the display in LittlevGL
 	*----------------------------------*/
 
-	lv_disp_drv_t disp_drv;                         /*Descriptor of a display driver*/
-	lv_disp_drv_init(&disp_drv);                    /*Basic initialization*/
+	lv_disp_drv_t disp_drv;                         //Descriptor of a display driver
+	lv_disp_drv_init(&disp_drv);                    //Basic initialization
 
-	/*Set up the functions to access to your display*/
+//	Set up the functions to access to your display
 
-	/*Set the resolution of the display*/
+//	Set the resolution of the display
 	disp_drv.hor_res = 480;
 	disp_drv.ver_res = 272;
 
-	/*Used to copy the buffer's content to the display*/
+//	Used to copy the buffer's content to the display
 	disp_drv.flush_cb = ex_disp_flush;
 
-	/*Set a display buffer*/
+//	Set a display buffer
 	disp_drv.buffer = &disp_buf_1;
 
 
-	/*Finally register the driver*/
+//	Finally register the driver
 	our_disp = lv_disp_drv_register(&disp_drv);
 }
 

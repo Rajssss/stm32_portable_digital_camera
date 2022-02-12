@@ -17,13 +17,16 @@
 #include "stm32746g_discovery.h"
 
 
-#define DISP_FRAME_BUFFER			0xC0200000
-
 static void SystemClock_Config(void);
 
+uint32_t *cam_buff1 = (uint32_t *) 0x60000000;
+uint32_t *cam_buff2 = (uint32_t *) 0x60200000;
 
 int main(void)
 {
+//	uint32_t cam_buff1[480*272*2/4];
+//	uint32_t cam_buff2[480*272*2/4];
+
     HAL_Init();
 
     /* Configure the system clock to 216 MHz */
@@ -47,12 +50,13 @@ int main(void)
 
 //    lv_demo_benchmark();
 //    lv_demo_widgets();
-    digitalcam_gui_init();
 
 //    cam_init();
-//    cam_live_feed();
+//    cam_live_feed(cam_buff1, cam_buff2);
 
-    while (1)
+    digitalcam_gui_init();
+
+    while(1)
     {
         HAL_Delay(5);
         lv_task_handler();
