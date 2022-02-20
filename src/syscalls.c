@@ -52,6 +52,12 @@
 #include <time.h>
 #include <sys/time.h>
 #include <sys/times.h>
+#include "stm32f7xx_hal.h"
+
+
+#define STDIN_FILENO 0
+#define STDOUT_FILENO 1
+#define STDERR_FILENO 2
 
 
 /* Variables */
@@ -59,6 +65,8 @@
 extern int errno;
 extern int __io_putchar(int ch) __attribute__((weak));
 extern int __io_getchar(void) __attribute__((weak));
+extern UART_HandleTypeDef uart_printf_log;
+
 
 register char * stack_ptr asm("sp");
 
@@ -90,25 +98,33 @@ void _exit (int status)
 
 int _read (int file, char *ptr, int len)
 {
-	int DataIdx;
+	HAL_StatusTypeDef hstatus;
 
-	for (DataIdx = 0; DataIdx < len; DataIdx++)
-	{
-		*ptr++ = __io_getchar();
+	if (file == STDIN_FILENO) {
+		hstatus = HAL_UART_Receive(&uart_printf_log, (uint8_t *) ptr, 1, HAL_MAX_DELAY);
+		if (hstatus == HAL_OK)
+			return 1;
+		else
+			return EIO;
 	}
-
-return len;
+	errno = EBADF;
+	return -1;;
 }
 
 int _write(int file, char *ptr, int len)
 {
-	int DataIdx;
+	HAL_StatusTypeDef hstatus;
 
-	for (DataIdx = 0; DataIdx < len; DataIdx++)
+	if (file == STDOUT_FILENO || file == STDERR_FILENO)
 	{
-		__io_putchar(*ptr++);
+		hstatus = HAL_UART_Transmit(&uart_printf_log, (uint8_t *) ptr, len, HAL_MAX_DELAY);
+		if (hstatus == HAL_OK)
+			return len;
+		else
+			return EIO;
 	}
-	return len;
+	errno = EBADF;
+	return -1;
 }
 
 caddr_t _sbrk(int incr)

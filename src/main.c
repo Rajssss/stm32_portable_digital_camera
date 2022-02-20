@@ -17,18 +17,14 @@
 #include "Utilities/STM32746G-Discovery/stm32746g_discovery_lcd.h"
 #include "stm32746g_discovery.h"
 #include "multi_heap.h"
+#include "inc/log.h"
+
 
 static void SystemClock_Config(void);
-
-//uint32_t *cam_buff1 = (uint32_t *) 0x60000000;
-//uint32_t *cam_buff2 = (uint32_t *) 0x60200000;
 
 
 int main(void)
 {
-//	uint32_t cam_buff1[480*272*2/4];
-//	uint32_t cam_buff2[480*272*2/4];
-
     HAL_Init();
 
     /* Configure the system clock to 216 MHz */
@@ -40,11 +36,16 @@ int main(void)
     /* Enable D-Cache */
     SCB_EnableDCache();
 
+    //Unable UART VCOM Logging
+    RetargetInit();
+
     BSP_QSPI_Init();
     BSP_QSPI_MemoryMappedMode();
 
     BSP_SDRAM_Init();
     HAL_EnableFMCMemorySwapping();
+
+    sys_log("Initializing LVGL\n");
 
     lv_init();
 
@@ -108,8 +109,7 @@ static void SystemClock_Config(void)
 
 void vAssertCalled( unsigned long ulLine, const char * const pcFileName )
 {
-static portBASE_TYPE xPrinted = pdFALSE;
-volatile uint32_t ulSetToNonZeroInDebuggerToContinue = 0;
+	volatile uint32_t ulSetToNonZeroInDebuggerToContinue = 0;
 
     /* Parameters are not used. */
     ( void ) ulLine;

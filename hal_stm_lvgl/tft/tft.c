@@ -18,6 +18,7 @@
 #include "stm32746g_discovery_ts.h"
 #include "../Components/rk043fn48h/rk043fn48h.h"
 #include "multi_heap.h"
+#include "inc/log.h"
 /*********************
  *      DEFINES
  *********************/
@@ -176,6 +177,8 @@ void tft_init(void)
 
 //	Finally register the driver
 	our_disp = lv_disp_drv_register(&disp_drv);
+
+	sys_log("Done! fb size: %d", 480*272*2);
 }
 
 /**********************
