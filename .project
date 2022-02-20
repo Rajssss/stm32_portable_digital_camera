@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>lv_port_stm32f746_disco</name>
+	<name>lv_port_stm32f746_disco_v7_rtos_test</name>
 	<comment></comment>
 	<projects>
 	</projects>

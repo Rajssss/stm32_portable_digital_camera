@@ -90,6 +90,11 @@
 #define OV9655_SENSOR_BRTN              0x55
 #define OV9655_SENSOR_CNST1             0x56
 #define OV9655_SENSOR_CNST2             0x57
+#define OV9655_SENSOR_MIRR_VFLIP        0x1E
+#define OV9655_SENSOR_CTRL11            0x3BU
+#define OV9655_SENSOR_CTRL12            0x3CU
+#define OV9655_SENSOR_CTRL13            0x3DU
+#define OV9655_SENSOR_CTRL14            0x3EU
 
 /** 
  * @brief  OV9655 Features Parameters  
@@ -116,6 +121,7 @@
 #define OV9655_COLOR_EFFECT_BLUE        0xCC000000000060  /* Blue effect                 */
 #define OV9655_COLOR_EFFECT_GREEN       0xCC000000008000  /* Green effect                */
 #define OV9655_COLOR_EFFECT_RED         0xCC600000000000  /* Red effect                  */
+
 /**
   * @}
   */
@@ -126,6 +132,8 @@
 void     ov9655_Init(uint16_t DeviceAddr, uint32_t resolution);
 void     ov9655_Config(uint16_t DeviceAddr, uint32_t feature, uint32_t value, uint32_t BR_value);
 uint16_t ov9655_ReadID(uint16_t DeviceAddr);
+void ov9655_MirrorFlipConfig(uint16_t DeviceAddr, uint32_t MirrorFlipConfig);
+void ov9655_NightModeConfig(uint16_t DeviceAddr, uint32_t mode);
 
 void     CAMERA_IO_Init(void);
 void     CAMERA_IO_Write(uint8_t addr, uint8_t reg, uint8_t value);

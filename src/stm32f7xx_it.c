@@ -55,6 +55,8 @@
 /* Private variables ---------------------------------------------------------*/
 /* SD handler declared in "stm32746g_discovery_sd.c" file */
 //extern SD_HandleTypeDef uSdHandle;
+extern DCMI_HandleTypeDef  hDcmiHandler;
+
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -128,9 +130,9 @@ void UsageFault_Handler(void)
   * @param  None
   * @retval None
   */
-void SVC_Handler(void)
+/*void SVC_Handler(void)
 {
-}
+}*/
 
 /**
   * @brief  This function handles Debug Monitor exception.
@@ -146,21 +148,40 @@ void DebugMon_Handler(void)
   * @param  None
   * @retval None
   */
-void PendSV_Handler(void)
+/*void PendSV_Handler(void)
 {
-}
+}*/
 
 /**
   * @brief  This function handles SysTick Handler.
   * @param  None
   * @retval None
   */
-void SysTick_Handler(void)
+/*void SysTick_Handler(void)
 {
   HAL_IncTick();
   HAL_SYSTICK_IRQHandler();
   lv_tick_inc(1);
+}*/
+
+/**
+  * @brief  Handles DCMI interrupt request.
+  * @retval None
+  */
+void BSP_CAMERA_IRQHandler(void)
+{
+  HAL_DCMI_IRQHandler(&hDcmiHandler);
 }
+
+/**
+  * @brief  Handles DMA interrupt request.
+  * @retval None
+  */
+void BSP_CAMERA_DMA_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(hDcmiHandler.DMA_Handle);
+}
+
 
 #if 0
 /******************************************************************************/

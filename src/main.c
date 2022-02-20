@@ -1,4 +1,5 @@
-
+#include "FreeRTOS.h"
+#include "task.h"
 #include "stm32f7xx.h"
 #include "lvgl/lvgl.h"
 
@@ -15,12 +16,13 @@
 #include "cam/inc/cam.h"
 #include "Utilities/STM32746G-Discovery/stm32746g_discovery_lcd.h"
 #include "stm32746g_discovery.h"
-
+#include "multi_heap.h"
 
 static void SystemClock_Config(void);
 
-uint32_t *cam_buff1 = (uint32_t *) 0x60000000;
-uint32_t *cam_buff2 = (uint32_t *) 0x60200000;
+//uint32_t *cam_buff1 = (uint32_t *) 0x60000000;
+//uint32_t *cam_buff2 = (uint32_t *) 0x60200000;
+
 
 int main(void)
 {
@@ -43,6 +45,7 @@ int main(void)
 
     BSP_SDRAM_Init();
     HAL_EnableFMCMemorySwapping();
+
     lv_init();
 
     tft_init();
@@ -51,10 +54,10 @@ int main(void)
 //    lv_demo_benchmark();
 //    lv_demo_widgets();
 
-//    cam_init();
-//    cam_live_feed(cam_buff1, cam_buff2);
-
     digitalcam_gui_init();
+
+//    cam_init();
+//    cam_live_feed();
 
     while(1)
     {
@@ -62,6 +65,7 @@ int main(void)
         lv_task_handler();
     }
 }
+
 
 static void SystemClock_Config(void)
 {
@@ -101,3 +105,24 @@ static void SystemClock_Config(void)
     HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_6);
 }
 
+
+void vAssertCalled( unsigned long ulLine, const char * const pcFileName )
+{
+static portBASE_TYPE xPrinted = pdFALSE;
+volatile uint32_t ulSetToNonZeroInDebuggerToContinue = 0;
+
+    /* Parameters are not used. */
+    ( void ) ulLine;
+    ( void ) pcFileName;
+
+    taskENTER_CRITICAL();
+    {
+        /* You can step out of this function to debug the assertion by using
+        the debugger to set ulSetToNonZeroInDebuggerToContinue to a non-zero
+        value. */
+        while( ulSetToNonZeroInDebuggerToContinue == 0 )
+        {
+        }
+    }
+    taskEXIT_CRITICAL();
+}

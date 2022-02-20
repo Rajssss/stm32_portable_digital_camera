@@ -44,7 +44,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 /* Include Camera component Driver */
-#include "../Components/ov9655/ov9655.h"
+#include "Utilities/Components/ov9655/ov9655.h"
 #include "stm32746g_discovery.h"
 
 /** @addtogroup BSP
@@ -100,7 +100,6 @@ typedef enum
 uint8_t BSP_CAMERA_Init(uint32_t Resolution);  
 uint8_t BSP_CAMERA_DeInit(void);
 void    BSP_CAMERA_ContinuousStart(uint8_t *buff);
-void    BSP_CAMERA_ContinuousStart_DBM(uint8_t *buff, uint8_t *second_buff);
 void    BSP_CAMERA_SnapshotStart(uint8_t *buff);
 void    BSP_CAMERA_Suspend(void);
 void    BSP_CAMERA_Resume(void);

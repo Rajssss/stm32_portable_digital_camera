@@ -116,6 +116,15 @@ typedef struct
 #define CAMERA_COLOR_EFFECT_RED         0x03   /* Red effect                  */
 #define CAMERA_COLOR_EFFECT_ANTIQUE     0x04   /* Antique effect              */
 
+/* Mirror/Flip */
+#define CAMERA_MIRROR_FLIP_NONE         0x00U   /* Set camera normal mode     */
+#define CAMERA_FLIP                     0x01U   /* Set camera flip config     */
+#define CAMERA_MIRROR                   0x02U   /* Set camera mirror config   */
+#define CAMERA_MIRROR_FLIP              0x03U   /* Set camera mirror and flip */
+
+/* Night Mode */
+#define CAMERA_NIGHT_MODE_DISABLE       0x00U   /* Disable night mode         */
+#define CAMERA_NIGHT_MODE_ENABLE        0x01U   /* Enable night mode          */
 /**
   * @}
   */

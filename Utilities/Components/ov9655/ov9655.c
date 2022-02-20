@@ -666,13 +666,47 @@ void ov9655_Config(uint16_t DeviceAddr, uint32_t feature, uint32_t value, uint32
       CAMERA_IO_Write(DeviceAddr, OV9655_SENSOR_MTX5, mtx5);
       CAMERA_IO_Write(DeviceAddr, OV9655_SENSOR_MTX6, mtx6);
       break;
-    }     
+    }
   default:
     {
       break;
     }
   }
 }
+
+
+void ov9655_MirrorFlipConfig(uint16_t DeviceAddr, uint32_t MirrorFlipConfig)
+{
+  uint8_t tmp;
+  tmp = CAMERA_IO_Read(DeviceAddr, OV9655_SENSOR_MIRR_VFLIP);
+
+  tmp &= ~(3U << 4U);    /* Clear Bit[5:4] Mirror/VFlip */
+  tmp |= (MirrorFlipConfig << 4U); /* Configure Bit[5:4] Mirror/VFlip */
+
+  CAMERA_IO_Write(DeviceAddr, OV9655_SENSOR_MIRR_VFLIP, tmp);
+}
+
+
+// Not working yet
+void ov9655_NightModeConfig(uint16_t DeviceAddr, uint32_t mode)
+{
+  uint8_t tmp;
+  tmp = CAMERA_IO_Read(DeviceAddr, OV9655_SENSOR_CTRL11);
+
+	if(mode == CAMERA_NIGHT_MODE_ENABLE)
+	{
+	  tmp |= 0x80U;
+	}
+	else
+	{
+	  tmp &= 0x7FU;
+	}
+
+	CAMERA_IO_Write(DeviceAddr, OV9655_SENSOR_CTRL11, tmp);
+	tmp = CAMERA_IO_Read(DeviceAddr, OV9655_SENSOR_CTRL11);
+	tmp = tmp+1;
+}
+
 
 /**
   * @brief  Read the OV9655 Camera identity.

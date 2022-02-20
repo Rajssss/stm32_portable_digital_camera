@@ -17,7 +17,7 @@
 #include "stm32746g_discovery_sdram.h"
 #include "stm32746g_discovery_ts.h"
 #include "../Components/rk043fn48h/rk043fn48h.h"
-
+#include "multi_heap.h"
 /*********************
  *      DEFINES
  *********************/
@@ -84,7 +84,7 @@ static void DMA2D_Config(void);
  *  STATIC VARIABLES
  **********************/
 #if LV_USE_GPU
-static DMA2D_HandleTypeDef Dma2dHandle;
+DMA2D_HandleTypeDef Dma2dHandle;
 #endif
 static LTDC_HandleTypeDef  hLtdcHandler;
 
@@ -96,10 +96,12 @@ typedef uint32_t uintpixel_t;
 
 /* You can try to change buffer to internal ram by uncommenting line below and commenting
  * SDRAM one. */
-//static uintpixel_t my_fb[TFT_HOR_RES * TFT_VER_RES];
+//static uintpixel_t lcd_fb[TFT_HOR_RES * TFT_VER_RES];
 
-//static __IO uintpixel_t * my_fb = (__IO uintpixel_t*) (SDRAM_DEVICE_ADDR);
-static __IO uintpixel_t * my_fb = (__IO uintpixel_t*) (0x60000000);
+//static __IO uintpixel_t * lcd_fb = (__IO uintpixel_t*) (SDRAM_DEVICE_ADDR);
+//static __IO uintpixel_t * lcd_fb = (__IO uintpixel_t*) (0x60000000);
+uintpixel_t * lcd_fb;
+
 
 static DMA_HandleTypeDef  DmaHandle;
 static int32_t            x1_flush;
@@ -123,11 +125,14 @@ void tft_init(void)
 	/* There is only one display on STM32 */
 	if(our_disp != NULL)
 		abort();
+
+    lcd_fb = malloc_ext(480*272*2);
+
     /* LCD Initialization */
     LCD_Init();
 
     /* LCD Initialization */
-    LCD_LayerRgb565Init((uint32_t)my_fb);
+    LCD_LayerRgb565Init((uint32_t)lcd_fb);
 
     /* Enable the LCD */
     LCD_DisplayOn();
@@ -217,7 +222,7 @@ static void ex_disp_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t 
 #if LV_COLOR_DEPTH == 24 || LV_COLOR_DEPTH == 32
     length *= 2; /* STM32 DMA uses 16-bit chunks so multiply by 2 for 32-bit color */
 #endif
-    err = HAL_DMA_Start_IT(&DmaHandle,(uint32_t)buf_to_flush, (uint32_t)&my_fb[y_fill_act * TFT_HOR_RES + x1_flush],
+    err = HAL_DMA_Start_IT(&DmaHandle,(uint32_t)buf_to_flush, (uint32_t)&lcd_fb[y_fill_act * TFT_HOR_RES + x1_flush],
              length);
     if(err != HAL_OK)
     {
@@ -371,7 +376,7 @@ static uint8_t LCD_Init(void)
     uint32_t i;
     for(i = 0; i < (TFT_HOR_RES * TFT_VER_RES) ; i++)
     {
-        my_fb[i] = 0;
+        lcd_fb[i] = 0;
     }
 
     return LCD_OK;
@@ -478,7 +483,7 @@ static void DMA_TransferComplete(DMA_HandleTypeDef *han)
 #if LV_COLOR_DEPTH == 24 || LV_COLOR_DEPTH == 32
         length *= 2; /* STM32 DMA uses 16-bit chunks so multiply by 2 for 32-bit color */
 #endif
-        if(HAL_DMA_Start_IT(han,(uint32_t)buf_to_flush, (uint32_t)&my_fb[y_fill_act * TFT_HOR_RES + x1_flush],
+        if(HAL_DMA_Start_IT(han,(uint32_t)buf_to_flush, (uint32_t)&lcd_fb[y_fill_act * TFT_HOR_RES + x1_flush],
                             length) != HAL_OK)
         {
             while(1);	/*Halt on error*/

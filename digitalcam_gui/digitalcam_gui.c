@@ -13,16 +13,12 @@
 	#include "lvgl/lvgl.h"
 #endif
 #include "font/font.h"
-
+#include "cam/inc/cam.h"
 
 static void digicam_viewfinder_init(void);
-static void digitalcam_cam_feed(void);
 
 
 
-lv_obj_t *digitalcam_main_scr;
-lv_obj_t *viewfinder_obj;
-lv_obj_t *cam_feed;
 
 
 void digitalcam_gui_init(void)
@@ -40,25 +36,24 @@ void digitalcam_gui_init(void)
 
 	lv_scr_load_anim(digitalcam_main_scr, LV_SCR_LOAD_ANIM_FADE_ON, 300, 0, 0);
 
-}
-
-
-void digitalcam_cam_feed(void)
-{
-	cam_feed = lv_img_create(digitalcam_main_scr, NULL);
 
 }
 
 
 void digicam_viewfinder_init(void)
 {
-	viewfinder_obj = lv_obj_create(digitalcam_main_scr, NULL);
+/*	viewfinder_obj = lv_obj_create(digitalcam_main_scr, NULL);
 	lv_obj_set_size(viewfinder_obj, 320, 240);
 	lv_obj_set_style_local_border_width(viewfinder_obj, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
 	lv_obj_set_style_local_radius(viewfinder_obj, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
 //	lv_obj_set_style_local_bg_opa(viewfinder_obj, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
-	lv_obj_align(viewfinder_obj, digitalcam_main_scr, LV_ALIGN_CENTER, 0, 0);
+	lv_obj_align(viewfinder_obj, digitalcam_main_scr, LV_ALIGN_CENTER, 0, 0);*/
 
+	viewfinder_obj = lv_img_create(digitalcam_main_scr, NULL);
+	lv_obj_set_size(viewfinder_obj, 320, 240);
+	lv_obj_set_style_local_border_width(viewfinder_obj, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
+	lv_obj_set_style_local_radius(viewfinder_obj, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
+	lv_obj_align(viewfinder_obj, digitalcam_main_scr, LV_ALIGN_CENTER, 0, 0);
 
 	static lv_style_t btn_style;
 	lv_style_init(&btn_style);
@@ -108,4 +103,10 @@ void digicam_viewfinder_init(void)
 	lv_label_set_text(setting_icon, VIEWFINDER_ICON_SETTINGS);
 	lv_obj_align(setting_icon, setting_btn, LV_ALIGN_CENTER, 0, 0);
 
+}
+
+
+void digitalcam_cam_update_frame(void *frame)
+{
+	lv_img_set_src(viewfinder_obj, frame);
 }
