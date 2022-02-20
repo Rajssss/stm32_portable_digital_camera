@@ -18,6 +18,7 @@
 #include "stm32746g_discovery.h"
 #include "multi_heap.h"
 #include "inc/log.h"
+#include "inc/gui.h"
 
 
 static void SystemClock_Config(void);
@@ -45,25 +46,12 @@ int main(void)
     BSP_SDRAM_Init();
     HAL_EnableFMCMemorySwapping();
 
-    sys_log("Initializing LVGL\n");
+    gui_init();
 
-    lv_init();
-
-    tft_init();
-    touchpad_init();
-
-//    lv_demo_benchmark();
-//    lv_demo_widgets();
-
-    digitalcam_gui_init();
-
-//    cam_init();
-//    cam_live_feed();
+	vTaskStartScheduler();
 
     while(1)
     {
-        HAL_Delay(5);
-        lv_task_handler();
     }
 }
 

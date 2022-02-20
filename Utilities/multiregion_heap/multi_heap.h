@@ -177,7 +177,7 @@ It is possible to search and reserve free memory from several memory regions.
 - malloc_ext, calloc_ext, realloc_ext, heapsize_ext: external memory region(s)
   The region order must be specified in the definitions. The number of parameters in the HEAP_NUM definition is mandatory,
   unused regions can be marked with -1. */
- //#define RTOSREGION        2                      // pvPortMalloc, vPortFree, xPortGetFreeHeapSize : region 2
+#define RTOSREGION        2                      // pvPortMalloc, vPortFree, xPortGetFreeHeapSize : region 2
 #define MALLOC_REGION     2,  4, -1, -1, -1 	// malloc, calloc, realloc, heapsize : region 0 + region 1 + region 4 + region 3 + region 2 + region 5
 #define MALLOC_DMAREGION  4,  2, -1, -1, -1 	// malloc_dma, calloc_dma, realloc_dma, heapsize_dma : region 4 + region 3 + region 2
 #define MALLOC_INTREGION  2, -1, -1, -1, -1 	// malloc_int, calloc_int, realloc_int, heapsize_int : region 0 + region 1 + region 4 + region 3 + region 2
