@@ -9,6 +9,7 @@
 #define CAM_INC_CAM_H_
 
 #include <stdint.h>
+#include "lvgl/lvgl.h"
 
 /*
 #define CAM_FRAME_BUFFER			0x60200000
@@ -25,6 +26,8 @@
 
 uint8_t *cam_fb;
 uint32_t cam_fb_size;
+
+lv_img_dsc_t my_img_dsc;
 
 uint8_t cam_init(void);
 uint8_t cam_live_feed(void);

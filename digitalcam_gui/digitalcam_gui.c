@@ -108,5 +108,9 @@ void digicam_viewfinder_init(void)
 
 void digitalcam_cam_update_frame(void *frame)
 {
+
+//	lv_img_set_src(viewfinder_obj, frame);
 	lv_img_set_src(viewfinder_obj, frame);
+	lv_obj_invalidate(viewfinder_obj);
+
 }

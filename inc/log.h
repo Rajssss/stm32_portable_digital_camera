@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include "stm32f7xx_hal.h"
 
-#define sys_log(fmt, ...) printf("%s: %s: " fmt, __FILE__, __FUNCTION__, ##__VA_ARGS__)
+#define sys_log(fmt, ...) printf("%s: %s: " fmt"\n\r", __FILE__, __FUNCTION__, ##__VA_ARGS__)
 
 void RetargetInit(void);
 
