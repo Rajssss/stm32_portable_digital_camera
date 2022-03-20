@@ -22,13 +22,16 @@ static void gui_task(void *args);
 static void cam_frame_update_task(void *args);
 
 
+TaskHandle_t cam_frame_update_task_handle;
+
+
 //GUI Semaphore
 SemaphoreHandle_t xGuiSemaphore;
 
 void gui_init(void)
 {
 	xTaskCreate(gui_task, "gui_task", 1024*10, NULL, 4, NULL);
-    xTaskCreate(cam_frame_update_task, "cam_frame_update_task", 1024*2, NULL, 4, &cam_frame_update_task_handle);
+//    xTaskCreate(cam_frame_update_task, "cam_frame_update_task", 1024*2, NULL, 4, &cam_frame_update_task_handle);
 
 }
 
@@ -44,11 +47,11 @@ static void gui_task(void *args)
     tft_init();
     touchpad_init();
 
-    digitalcam_gui_init();
+//    digitalcam_gui_init();
 
-//    cam_init();
+    cam_init();
 //
-//    cam_live_feed();
+    cam_live_feed();
 
     while(1)
     {
@@ -58,7 +61,7 @@ static void gui_task(void *args)
 
         /* Try to take the semaphore, call lvgl related function on success */
         if (pdTRUE == xSemaphoreTake(xGuiSemaphore, portMAX_DELAY)) {
-            lv_task_handler();
+//            lv_task_handler();
             xSemaphoreGive(xGuiSemaphore);
        }
     }

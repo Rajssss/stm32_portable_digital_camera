@@ -28,6 +28,12 @@ typedef uint32_t uintpixel_t;
 #endif
 
 
+uint8_t *cam_fb;
+uint32_t cam_fb_size;
+
+lv_img_dsc_t my_img_dsc;
+
+
 extern DCMI_HandleTypeDef  hDcmiHandler;
 extern DMA2D_HandleTypeDef Dma2dHandle;
 extern uintpixel_t * lcd_fb;
@@ -67,7 +73,7 @@ uint8_t cam_live_feed(void)
 void BSP_CAMERA_FrameEventCallback(void)
 {
 	// Process cam data per Per Frame(X*Y)
-/*    Dma2dHandle.Init.Mode         = DMA2D_M2M_PFC;
+    Dma2dHandle.Init.Mode         = DMA2D_M2M_PFC;
 //    Dma2dHandle.Init.ColorMode    = DMA2D_OUTPUT_ARGB8888;
     Dma2dHandle.Init.ColorMode    = DMA2D_OUTPUT_RGB565;
     Dma2dHandle.Init.OutputOffset = 0x0;
@@ -92,7 +98,7 @@ void BSP_CAMERA_FrameEventCallback(void)
     else
     {
       while(1);
-    }*/
+    }
 
 /*	sys_log("BSP_CAMERA_FrameEventCallback: Received");
 
@@ -104,9 +110,9 @@ void BSP_CAMERA_FrameEventCallback(void)
 
 		xSemaphoreGive(xGuiSemaphore);
 	}*/
-	sys_log("BSP_CAMERA_FrameEventCallback: Received");
+//	sys_log("BSP_CAMERA_FrameEventCallback: Received");
 
-	xTaskNotifyFromISR(cam_frame_update_task_handle, 0, eNoAction, NULL);
+//	xTaskNotifyFromISR(cam_frame_update_task_handle, 0, eNoAction, NULL);
 //	digitalcam_cam_update_frame(cam_fb);
 
 }

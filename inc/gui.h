@@ -10,7 +10,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-TaskHandle_t cam_frame_update_task_handle;
+extern TaskHandle_t cam_frame_update_task_handle;
 
 void gui_init(void);
 

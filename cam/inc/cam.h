@@ -24,10 +24,10 @@
 #define SECOND_FRAME_BUFFER		0xC0200000
 */
 
-uint8_t *cam_fb;
-uint32_t cam_fb_size;
+extern uint8_t *cam_fb;
+extern uint32_t cam_fb_size;
 
-lv_img_dsc_t my_img_dsc;
+extern lv_img_dsc_t my_img_dsc;
 
 uint8_t cam_init(void);
 uint8_t cam_live_feed(void);

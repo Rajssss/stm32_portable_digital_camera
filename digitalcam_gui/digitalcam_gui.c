@@ -18,7 +18,9 @@
 static void digicam_viewfinder_init(void);
 
 
-
+lv_obj_t *digitalcam_main_scr;
+lv_obj_t *viewfinder_obj;
+lv_obj_t *cam_feed;
 
 
 void digitalcam_gui_init(void)
